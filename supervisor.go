@@ -7,6 +7,7 @@ import (
 	"os"
 
 	api "wgen/mod/api"
+	printer "wgen/mod/printer"
 	simulator "wgen/mod/simulator"
 	workload "wgen/mod/workload"
 )
@@ -29,7 +30,7 @@ func parseArgs() (string, string, uint) {
 	flag.Parse()
 
 	if !requiredFlags("a") {
-		fmt.Println(errors.New("CALL ERROR: -w flag w/ args is required"))
+		fmt.Println(errors.New("CALL ERROR: -a flag w/ args is required"))
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
@@ -39,7 +40,7 @@ func parseArgs() (string, string, uint) {
 		os.Exit(0)
 	}
 	if !requiredFlags("d") {
-		fmt.Println(errors.New("CALL ERROR: -w flag w/ args is required"))
+		fmt.Println(errors.New("CALL ERROR: -d flag w/ args is required"))
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
@@ -53,5 +54,6 @@ func main() {
 	api_spec := api.ParseYamlAPISpecFile(apispec_file)
 	workload := workload.ParseYamlWorkloadFile(workload_file, api_spec)
 
+	printer.PrintSimulationInfo(apispec_file, workload_file)
 	simulator.Simulate(workload, uint32(sim_day_length))
 }
