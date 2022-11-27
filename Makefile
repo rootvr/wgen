@@ -28,7 +28,7 @@ clean:
 	rm -f $(PREFIX)/$(DESTDIR)/$(WGEN_OBJ)
 
 .PHONY: run # compile and run wgen
-run: build
+run:
 	clear
 	$(WGEN_GO) run $(WGEN_MAIN) $(WGEN_ARGS)
 
@@ -44,6 +44,6 @@ uninstall:
 deps:
 	$(WGEN_GO) mod tidy
 
-.PHONY: fmt # format all
-fmt:
+.PHONY: format # format all
+format:
 	$(WGEN_GO) fmt ./...
