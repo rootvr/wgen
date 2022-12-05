@@ -5,10 +5,13 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
+	"strconv"
 
 	api "wgen/mod/api"
 	printer "wgen/mod/printer"
 	simulator "wgen/mod/simulator"
+	utils "wgen/mod/utils"
 	workload "wgen/mod/workload"
 )
 
@@ -22,10 +25,32 @@ func requiredFlags(flagName string) bool {
 	return res
 }
 
-func parseArgs() (string, string, uint) {
+func parseDayLength(dayLengthStr string) uint32 {
+	unit := string(dayLengthStr[len(dayLengthStr)-1])
+	time := string(dayLengthStr[:len(dayLengthStr)-1])
+
+	if unit == "s" {
+		res, err := strconv.ParseUint(time, 10, 0)
+		utils.Kill(err)
+		return uint32(res)
+	} else if unit == "m" {
+		res, err := strconv.ParseUint(time, 10, 0)
+		utils.Kill(err)
+		return uint32(res * 60)
+	} else if unit == "h" {
+		res, err := strconv.ParseUint(time, 10, 0)
+		utils.Kill(err)
+		return uint32(res * 3600)
+	}
+
+	panic("Invalid day length unit type! `" + unit + "` (must be `s`, `m` or `h`)")
+}
+
+func parseArgs() (string, string, uint32) {
 	w := flag.String("w", "", "workload/file/path")
 	a := flag.String("a", "", "apispec/file/path")
-	d := flag.Uint("d", 0, "simulated day length (in seconds)")
+	d := flag.String("d", "", "simulated day length (examples: 30s, 10m, 1h)")
+	var pd uint32
 
 	flag.Parse()
 
@@ -45,7 +70,17 @@ func parseArgs() (string, string, uint) {
 		os.Exit(0)
 	}
 
-	return *w, *a, *d
+	r, _ := regexp.Compile("[1-9]+[0-9]*[smh]{1}$")
+
+	if r.MatchString(*d) {
+		pd = parseDayLength(*d)
+	} else {
+		fmt.Println("CALL ERROR: -d flag w/ args must be `-d <UNSIGNED_INT>[smh]`, given", *d)
+		flag.PrintDefaults()
+		os.Exit(0)
+	}
+
+	return *w, *a, pd
 }
 
 func main() {

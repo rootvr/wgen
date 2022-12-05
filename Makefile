@@ -9,7 +9,7 @@ DESTDIR := bin
 WGEN_YAML_WORKLOAD := ./yaml/robot-shop-workload.yml
 WGEN_YAML_APISPEC := ./yaml/robot-shop-api.yml
 
-WGEN_ARGS := -w $(WGEN_YAML_WORKLOAD) -a $(WGEN_YAML_APISPEC) -d 5
+WGEN_ARGS := -w $(WGEN_YAML_WORKLOAD) -a $(WGEN_YAML_APISPEC) -d 5s
 
 .SILENT: help
 .PHONY: help # print help
